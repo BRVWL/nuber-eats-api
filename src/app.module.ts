@@ -9,6 +9,7 @@ import { join } from 'path';
 import { UsersModule } from './users/users.module';
 import { CommonModule } from './common/common.module';
 import { User } from './users/entities/user.entity';
+import { JwtModule } from './jwt/jwt.module';
 
 @Module({
   imports: [
@@ -31,6 +32,9 @@ import { User } from './users/entities/user.entity';
     }),
     UsersModule,
     CommonModule,
+    JwtModule.forRoot({
+      privateKey: process.env.JWT_SECRET,
+    }),
   ],
   controllers: [],
   providers: [],

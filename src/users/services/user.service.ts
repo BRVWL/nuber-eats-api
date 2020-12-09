@@ -1,17 +1,20 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
 import { CreateUserInput, CreateUserOutput } from '../dto/createUser.dto';
 import { LoginInput, LoginOutput } from '../dto/login.dto';
 import { UpdateUserDto } from '../dto/updateUser.dto';
 
 import { User } from '../entities/user.entity';
+import { JwtService } from 'src/jwt/services/jwt.service';
 
 @Injectable()
 export class UserService {
-  constructor(@InjectRepository(User) private users: Repository<User>) {}
+  constructor(
+    @InjectRepository(User) private users: Repository<User>,
+    private jwtService: JwtService,
+  ) {}
 
   getAll(): Promise<User[]> {
     return this.users.find();
@@ -22,7 +25,6 @@ export class UserService {
     password,
     role,
   }: CreateUserInput): Promise<CreateUserOutput> {
-    // check that email doesn't exist
     try {
       const existingUser: User = await this.users.findOne({ email });
       if (existingUser) {
@@ -32,7 +34,6 @@ export class UserService {
           error: 'User already exists',
         };
       }
-      // create user and hash password
       const newUser: User = await this.users.create({ email, password, role });
       const savedUser: User = await this.users.save(newUser);
       return {
@@ -68,13 +69,11 @@ export class UserService {
           error: 'Wrong password',
         };
       }
-      const token = await jwt.sign(
-        { id: user.id, email: user.email, role: user.role },
-        process.env.JWT_SECRET,
-        {
-          expiresIn: '1h',
-        },
-      );
+      const token = await this.jwtService.sign({
+        id: user.id,
+        email: user.email,
+        role: user.role,
+      });
       return {
         ok: true,
         token,
