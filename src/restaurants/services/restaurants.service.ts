@@ -2,10 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateRestaurantDto } from '../dto/createRestaurant.dto';
-import {
-  UpdateRestaurantDto,
-  UpdateRestaurantInputType,
-} from '../dto/updateRestaurant.dto';
+import { UpdateRestaurantDto } from '../dto/updateRestaurant.dto';
 import { Restaurant } from '../entities/restaurant.entity';
 
 @Injectable()
