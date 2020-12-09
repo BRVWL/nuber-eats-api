@@ -3,16 +3,16 @@ import { IsBoolean, IsString, Length } from 'class-validator';
 
 @ArgsType()
 export class CreateRestaurantDto {
-  @Field((type) => String)
+  @Field((_type) => String)
   @IsString()
   @Length(3, 30)
   name: string;
 
-  @Field((type) => String)
+  @Field((_type) => String)
   @IsString()
   address: string;
 
-  @Field((type) => Boolean)
+  @Field((_type) => Boolean)
   @IsBoolean()
   isVegan: boolean;
 }

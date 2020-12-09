@@ -4,19 +4,19 @@ import { Column, Entity, PrimaryColumn } from 'typeorm';
 @ObjectType()
 @Entity()
 export class Restaurant {
-  @Field((is) => Number)
+  @Field((_is) => Number)
   @PrimaryColumn()
   id: number;
 
-  @Field((is) => String)
+  @Field((_is) => String)
   @Column()
   name: string;
 
-  @Field((is) => String)
+  @Field((_is) => String)
   @Column()
   address: string;
 
-  @Field((is) => Boolean)
+  @Field((_is) => Boolean)
   @Column()
   isVegan: boolean;
 }
