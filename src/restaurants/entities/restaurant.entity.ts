@@ -5,14 +5,14 @@ import { IsBoolean, IsString, Length } from 'class-validator';
 @ObjectType()
 @Entity()
 export class Restaurant {
-  @Field((_is) => Number)
-  @PrimaryGeneratedColumn()
+  @Field((_is) => Number) // for graphql shema
+  @PrimaryGeneratedColumn() // for auto id inc
   id: number;
 
   @Field((_is) => String)
   @Column()
-  @IsString()
-  @Length(3, 45)
+  @IsString() // dto validation
+  @Length(3, 45) // dto validation
   name: string;
 
   @Field((_is) => String)
