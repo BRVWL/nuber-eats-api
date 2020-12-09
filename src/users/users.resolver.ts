@@ -1,5 +1,6 @@
 import { Resolver, Query, Args, Mutation } from '@nestjs/graphql';
 import { CreateUserInput, CreateUserOutput } from './dto/createUser.dto';
+import { LoginInput, LoginOutput } from './dto/login.dto';
 import { UpdateUserDto } from './dto/updateUser.dto';
 
 import { User } from './entities/user.entity';
@@ -20,6 +21,16 @@ export class UserResolver {
   ): Promise<CreateUserOutput> {
     try {
       return await this.userService.createUser(createUserDto);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  @Mutation((_willReturn) => LoginOutput)
+  async login(@Args('data') loginDto: LoginInput): Promise<LoginOutput> {
+    const { email, password } = loginDto;
+    try {
+      return await this.userService.login({ email, password });
     } catch (error) {
       console.error(error);
     }

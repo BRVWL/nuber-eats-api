@@ -1,7 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import * as bcrypt from 'bcrypt';
 import { CreateUserInput, CreateUserOutput } from '../dto/createUser.dto';
+import { LoginInput, LoginOutput } from '../dto/login.dto';
 import { UpdateUserDto } from '../dto/updateUser.dto';
 
 import { User } from '../entities/user.entity';
@@ -42,6 +44,39 @@ export class UserService {
       return {
         ok: false,
         user: null,
+        error,
+      };
+    }
+  }
+
+  async login({ email, password }: LoginInput): Promise<LoginOutput> {
+    try {
+      const user: User = await this.users.findOne({ email });
+      if (!user) {
+        return {
+          ok: false,
+          token: null,
+          error: "User doesn't exist",
+        };
+      }
+      const isPasswordCorrect = await user.checkPassword(password);
+      if (!isPasswordCorrect) {
+        return {
+          ok: false,
+          token: null,
+          error: 'Wrong password',
+        };
+      }
+      return {
+        ok: true,
+        token: 'token#',
+        error: null,
+      };
+    } catch (error) {
+      console.error(error);
+      return {
+        ok: false,
+        token: null,
         error,
       };
     }
