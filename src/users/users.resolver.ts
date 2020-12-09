@@ -20,7 +20,7 @@ export class UserResolver {
     @Args('data') createUserDto: CreateUserInput,
   ): Promise<CreateUserOutput> {
     try {
-      return await this.userService.createUser(createUserDto);
+      return this.userService.createUser(createUserDto);
     } catch (error) {
       console.error(error);
     }
@@ -30,7 +30,7 @@ export class UserResolver {
   async login(@Args('data') loginDto: LoginInput): Promise<LoginOutput> {
     const { email, password } = loginDto;
     try {
-      return await this.userService.login({ email, password });
+      return this.userService.login({ email, password });
     } catch (error) {
       console.error(error);
     }

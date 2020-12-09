@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
+import * as jwt from 'jsonwebtoken';
 import { CreateUserInput, CreateUserOutput } from '../dto/createUser.dto';
 import { LoginInput, LoginOutput } from '../dto/login.dto';
 import { UpdateUserDto } from '../dto/updateUser.dto';
@@ -67,9 +68,12 @@ export class UserService {
           error: 'Wrong password',
         };
       }
+      const token = await jwt.sign({ ...user }, process.env.JWT_SECRET, {
+        expiresIn: '1h',
+      });
       return {
         ok: true,
-        token: 'token#',
+        token,
         error: null,
       };
     } catch (error) {
