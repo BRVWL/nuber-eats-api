@@ -21,7 +21,7 @@ export class UserService {
   }: CreateUserInput): Promise<CreateUserOutput> {
     // check that email doesn't exist
     try {
-      const existingUser = await this.users.findOne({ email });
+      const existingUser: User = await this.users.findOne({ email });
       if (existingUser) {
         return {
           ok: false,
@@ -31,7 +31,7 @@ export class UserService {
       }
       // create user and hash password
       const newUser: User = await this.users.create({ email, password, role });
-      const savedUser = await this.users.save(newUser);
+      const savedUser: User = await this.users.save(newUser);
       return {
         ok: true,
         user: savedUser,
@@ -39,6 +39,11 @@ export class UserService {
       };
     } catch (error) {
       console.error(error);
+      return {
+        ok: false,
+        user: null,
+        error,
+      };
     }
   }
 
