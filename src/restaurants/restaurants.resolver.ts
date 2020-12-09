@@ -13,8 +13,15 @@ export class RestaurantsResolver {
   }
 
   @Mutation((_willReturn) => Boolean)
-  createRestaurant(@Args() createRestaurantDto: CreateRestaurantDto): boolean {
-    console.log('debug  =========>  ', createRestaurantDto);
-    return true;
+  async createRestaurant(
+    @Args('input') createRestaurantDto: CreateRestaurantDto,
+  ): Promise<boolean> {
+    try {
+      await this.restaurantService.createRestaurant(createRestaurantDto);
+      return true;
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
   }
 }
