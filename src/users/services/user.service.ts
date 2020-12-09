@@ -68,9 +68,13 @@ export class UserService {
           error: 'Wrong password',
         };
       }
-      const token = await jwt.sign({ ...user }, process.env.JWT_SECRET, {
-        expiresIn: '1h',
-      });
+      const token = await jwt.sign(
+        { id: user.id, email: user.email, role: user.role },
+        process.env.JWT_SECRET,
+        {
+          expiresIn: '1h',
+        },
+      );
       return {
         ok: true,
         token,
