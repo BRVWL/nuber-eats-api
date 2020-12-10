@@ -1,5 +1,5 @@
-import { Resolver, Query, Args, Mutation } from '@nestjs/graphql';
-import { CreateUserInput, CreateUserOutput } from './dto/createUser.dto';
+import { Resolver, Query, Args, Mutation, Context } from '@nestjs/graphql';
+import { UserInput, UserOutput } from './dto/createUser.dto';
 import { LoginInput, LoginOutput } from './dto/login.dto';
 import { UpdateUserDto } from './dto/updateUser.dto';
 
@@ -10,15 +10,23 @@ import { UserService } from './services/user.service';
 export class UserResolver {
   constructor(private readonly userService: UserService) {}
 
+  @Query((_willReturn) => User)
+  me(@Context() context) {
+    if (!context.user) {
+      return;
+    }
+    return context.user;
+  }
+
   @Query((_willReturn) => [User])
   users(): Promise<User[]> {
     return this.userService.getAll();
   }
 
-  @Mutation((_willReturn) => CreateUserOutput)
+  @Mutation((_willReturn) => UserOutput)
   async createUser(
-    @Args('data') createUserDto: CreateUserInput,
-  ): Promise<CreateUserOutput> {
+    @Args('data') createUserDto: UserInput,
+  ): Promise<UserOutput> {
     try {
       return this.userService.createUser(createUserDto);
     } catch (error) {

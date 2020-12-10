@@ -17,7 +17,7 @@ enum UserRole {
   delivery
 }
 
-type CreateUserOutput {
+type UserOutput {
   error: String
   ok: Boolean!
   user: User
@@ -30,16 +30,17 @@ type LoginOutput {
 }
 
 type Query {
+  me: User!
   users: [User!]!
 }
 
 type Mutation {
-  createUser(data: CreateUserInput!): CreateUserOutput!
+  createUser(data: UserInput!): UserOutput!
   login(data: LoginInput!): LoginOutput!
   updateUser(id: Float!, data: UpdateUserInputType!): Boolean!
 }
 
-input CreateUserInput {
+input UserInput {
   email: String!
   password: String!
   role: UserRole!

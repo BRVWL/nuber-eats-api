@@ -1,8 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import * as jwt from 'jsonwebtoken';
-import { CreateUserInput, CreateUserOutput } from '../dto/createUser.dto';
+import { UserInput, UserOutput } from '../dto/createUser.dto';
 import { LoginInput, LoginOutput } from '../dto/login.dto';
 import { UpdateUserDto } from '../dto/updateUser.dto';
 
@@ -16,15 +15,31 @@ export class UserService {
     private jwtService: JwtService,
   ) {}
 
+  async findById(id: number): Promise<UserOutput> {
+    try {
+      const user = await this.users.findOne({ id });
+      if (!user) {
+        return {
+          ok: false,
+          user: null,
+          error: 'Not gount the user',
+        };
+      }
+      return {
+        ok: true,
+        user,
+        error: null,
+      };
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   getAll(): Promise<User[]> {
     return this.users.find();
   }
 
-  async createUser({
-    email,
-    password,
-    role,
-  }: CreateUserInput): Promise<CreateUserOutput> {
+  async createUser({ email, password, role }: UserInput): Promise<UserOutput> {
     try {
       const existingUser: User = await this.users.findOne({ email });
       if (existingUser) {
