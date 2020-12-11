@@ -1,4 +1,7 @@
-import { Resolver, Query, Args, Mutation, Context } from '@nestjs/graphql';
+import { UseGuards } from '@nestjs/common';
+import { Resolver, Query, Args, Mutation } from '@nestjs/graphql';
+import { AuthUser } from 'src/auth/auth-user.decorator';
+import { AuthGuard } from 'src/auth/guard/auth.guard';
 import { UserInput, UserOutput } from './dto/createUser.dto';
 import { LoginInput, LoginOutput } from './dto/login.dto';
 import { UpdateUserDto } from './dto/updateUser.dto';
@@ -11,11 +14,9 @@ export class UserResolver {
   constructor(private readonly userService: UserService) {}
 
   @Query((_willReturn) => User)
-  me(@Context() context) {
-    if (!context.user) {
-      return;
-    }
-    return context.user;
+  @UseGuards(AuthGuard)
+  me(@AuthUser() authUser: User) {
+    return authUser;
   }
 
   @Query((_willReturn) => [User])
