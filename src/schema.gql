@@ -29,8 +29,15 @@ type LoginOutput {
   token: String
 }
 
+type UserProfileOutput {
+  error: String
+  ok: Boolean!
+  user: User
+}
+
 type Query {
   me: User!
+  userProfile(userId: Float!): UserProfileOutput!
   users: [User!]!
 }
 

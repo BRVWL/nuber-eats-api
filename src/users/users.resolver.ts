@@ -5,6 +5,7 @@ import { AuthGuard } from 'src/auth/guard/auth.guard';
 import { UserInput, UserOutput } from './dto/createUser.dto';
 import { LoginInput, LoginOutput } from './dto/login.dto';
 import { UpdateUserDto } from './dto/updateUser.dto';
+import { UserProfileInput, UserProfileOutput } from './dto/user-profile.dto';
 
 import { User } from './entities/user.entity';
 import { UserService } from './services/user.service';
@@ -17,6 +18,19 @@ export class UserResolver {
   @UseGuards(AuthGuard)
   me(@AuthUser() authUser: User) {
     return authUser;
+  }
+
+  @UseGuards(AuthGuard)
+  @Query((_willReturn) => UserProfileOutput)
+  async userProfile(
+    @Args() userProfileInput: UserProfileInput,
+  ): Promise<UserProfileOutput> {
+    const { userId } = userProfileInput;
+    try {
+      return this.userService.findById(userId);
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   @Query((_willReturn) => [User])
