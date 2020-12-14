@@ -13,10 +13,12 @@ import { join } from 'path';
 // import { Restaurant } from './restaurants/entities/restaurant.entity';
 import { UsersModule } from './users/users.module';
 import { CommonModule } from './common/common.module';
-import { User } from './users/entities/user.entity';
 import { JwtModule } from './jwt/jwt.module';
 import { JwtMiddleware } from './jwt/middleware/jwt.middleware';
 import { AuthModule } from './auth/auth.module';
+
+import { User } from './users/entities/user.entity';
+import { Verificarion } from './users/entities/verification.entity';
 
 @Module({
   imports: [
@@ -32,7 +34,7 @@ import { AuthModule } from './auth/auth.module';
       database: process.env.DB_NAME,
       synchronize: true,
       logging: true,
-      entities: [User],
+      entities: [User, Verificarion],
     }),
     GraphQLModule.forRoot({
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
