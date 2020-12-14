@@ -4,7 +4,7 @@ import { AuthUser } from 'src/auth/auth-user.decorator';
 import { AuthGuard } from 'src/auth/guard/auth.guard';
 import { UserInput, UserOutput } from './dto/createUser.dto';
 import { LoginInput, LoginOutput } from './dto/login.dto';
-import { UpdateUserDto } from './dto/updateUser.dto';
+import { UpdateUserDto, UpdateUserOutput } from './dto/updateUser.dto';
 import { UserProfileInput, UserProfileOutput } from './dto/user-profile.dto';
 
 import { User } from './entities/user.entity';
@@ -59,14 +59,12 @@ export class UserResolver {
     }
   }
 
-  @Mutation((_willReturn) => Boolean)
-  async updateUser(@Args() updateUserDto: UpdateUserDto): Promise<boolean> {
+  @Mutation((_willReturn) => UpdateUserOutput)
+  async updateUser(@Args() updateUserDto: UpdateUserDto) {
     try {
       await this.userService.updateUser(updateUserDto);
-      return true;
     } catch (error) {
       console.error(error);
-      return false;
     }
   }
 }

@@ -1,4 +1,11 @@
-import { ArgsType, Field, InputType, PartialType } from '@nestjs/graphql';
+import {
+  ArgsType,
+  Field,
+  InputType,
+  ObjectType,
+  PartialType,
+} from '@nestjs/graphql';
+import { MutationOutput } from 'src/common/dto/output.dto';
 import { UserInput } from './createUser.dto';
 
 @InputType()
@@ -12,3 +19,6 @@ export class UpdateUserDto {
   @Field((_type) => UpdateUserInputType)
   data: UpdateUserInputType;
 }
+
+@ObjectType()
+export class UpdateUserOutput extends MutationOutput {}

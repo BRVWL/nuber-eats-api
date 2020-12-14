@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UserInput, UserOutput } from '../dto/createUser.dto';
 import { LoginInput, LoginOutput } from '../dto/login.dto';
-import { UpdateUserDto } from '../dto/updateUser.dto';
+import { UpdateUserDto, UpdateUserOutput } from '../dto/updateUser.dto';
 import { User } from '../entities/user.entity';
 import { JwtService } from 'src/jwt/services/jwt.service';
 
@@ -21,7 +21,7 @@ export class UserService {
         return {
           ok: false,
           user: null,
-          error: 'Not gount the user',
+          error: 'User not found',
         };
       }
       return {
@@ -103,8 +103,18 @@ export class UserService {
     }
   }
 
-  updateUser(updateUserDto: UpdateUserDto) {
+  async updateUser(updateUserDto: UpdateUserDto) {
     const { id, data } = updateUserDto;
-    return this.users.update(id, { ...data });
+    const updatedUser = await this.users.update(id, { ...data });
+    if (!updatedUser) {
+      return {
+        ok: false,
+        error: 'Error while update user',
+      };
+    }
+    return {
+      ok: true,
+      error: null,
+    };
   }
 }
