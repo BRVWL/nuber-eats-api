@@ -95,7 +95,10 @@ export class UserService {
 
   async login({ email, password }: LoginInput): Promise<LoginOutput> {
     try {
-      const user: User = await this.users.findOne({ email });
+      const user: User = await this.users.findOne(
+        { email },
+        { select: ['id', 'password', 'email', 'role'] },
+      );
       if (!user) {
         return {
           ok: false,
