@@ -21,6 +21,10 @@ export class User extends CoreEntity {
   @IsEmail()
   email: string;
 
+  @Field((_is) => Boolean)
+  @Column({ default: false })
+  virified: boolean;
+
   @Field((_is) => String)
   @Column()
   @IsString()

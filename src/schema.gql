@@ -7,6 +7,7 @@ type User {
   createdAt: Float!
   updatedAt: Float!
   email: String!
+  virified: Boolean!
   password: String!
   role: UserRole!
 }
