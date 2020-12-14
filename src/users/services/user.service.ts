@@ -6,6 +6,7 @@ import { LoginInput, LoginOutput } from '../dto/login.dto';
 import { UpdateUserDto, UpdateUserOutput } from '../dto/updateUser.dto';
 import { User } from '../entities/user.entity';
 import { JwtService } from 'src/jwt/services/jwt.service';
+import { UserProfileOutput } from '../dto/user-profile.dto';
 
 @Injectable()
 export class UserService {
@@ -103,18 +104,32 @@ export class UserService {
     }
   }
 
-  async updateUser(updateUserDto: UpdateUserDto) {
+  async updateUser(updateUserDto: UpdateUserDto): Promise<UpdateUserOutput> {
     const { id, data } = updateUserDto;
-    const updatedUser = await this.users.update(id, { ...data });
-    if (!updatedUser) {
+    const { email, password, role } = data;
+    try {
+      const user = await this.users.findOne({ id });
+      if (email) {
+        user.email = email;
+      }
+      if (password) {
+        user.password = password;
+      }
+      if (role) {
+        user.role = role;
+      }
+      const editedUser = await this.users.save(user);
+      return {
+        ok: true,
+        error: null,
+        user: editedUser,
+      };
+    } catch (error) {
       return {
         ok: false,
         error: 'Error while update user',
+        user: null,
       };
     }
-    return {
-      ok: true,
-      error: null,
-    };
   }
 }

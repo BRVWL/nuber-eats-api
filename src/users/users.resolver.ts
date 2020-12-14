@@ -60,9 +60,11 @@ export class UserResolver {
   }
 
   @Mutation((_willReturn) => UpdateUserOutput)
-  async updateUser(@Args() updateUserDto: UpdateUserDto) {
+  async updateUser(
+    @Args() updateUserDto: UpdateUserDto,
+  ): Promise<UpdateUserOutput> {
     try {
-      await this.userService.updateUser(updateUserDto);
+      return await this.userService.updateUser(updateUserDto);
     } catch (error) {
       console.error(error);
     }

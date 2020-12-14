@@ -6,6 +6,7 @@ import {
   PartialType,
 } from '@nestjs/graphql';
 import { MutationOutput } from 'src/common/dto/output.dto';
+import { User } from '../entities/user.entity';
 import { UserInput } from './createUser.dto';
 
 @InputType()
@@ -21,4 +22,7 @@ export class UpdateUserDto {
 }
 
 @ObjectType()
-export class UpdateUserOutput extends MutationOutput {}
+export class UpdateUserOutput extends MutationOutput {
+  @Field((_type) => User, { nullable: true })
+  user: User;
+}
