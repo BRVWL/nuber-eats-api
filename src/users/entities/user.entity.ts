@@ -23,7 +23,7 @@ export class User extends CoreEntity {
 
   @Field((_is) => Boolean)
   @Column({ default: false })
-  virified: boolean;
+  verified: boolean;
 
   @Field((_is) => String)
   @Column()

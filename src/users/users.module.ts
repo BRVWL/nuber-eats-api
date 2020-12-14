@@ -1,13 +1,12 @@
 import { Module } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { JwtService } from 'src/jwt/services/jwt.service';
 import { User } from './entities/user.entity';
+import { Verification } from './entities/verification.entity';
 import { UserService } from './services/user.service';
 import { UserResolver } from './users.resolver';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User])],
+  imports: [TypeOrmModule.forFeature([User, Verification])],
   providers: [UserResolver, UserService],
   exports: [UserService],
 })

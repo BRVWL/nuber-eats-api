@@ -6,6 +6,7 @@ import { UserInput, UserOutput } from './dto/createUser.dto';
 import { LoginInput, LoginOutput } from './dto/login.dto';
 import { UpdateUserDto, UpdateUserOutput } from './dto/updateUser.dto';
 import { UserProfileInput, UserProfileOutput } from './dto/user-profile.dto';
+import { VerifyEmailInput, VerifyEmailOutput } from './dto/verify-email.dto';
 
 import { User } from './entities/user.entity';
 import { UserService } from './services/user.service';
@@ -44,6 +45,24 @@ export class UserResolver {
   ): Promise<UserOutput> {
     try {
       return this.userService.createUser(createUserDto);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  @Mutation((_willReturn) => VerifyEmailOutput)
+  async verifyEmail(
+    @Args('data') verifyEmailInput: VerifyEmailInput,
+  ): Promise<VerifyEmailOutput> {
+    const { code } = verifyEmailInput;
+    try {
+      if (code) {
+        const verified = await this.userService.verifyEmail(code);
+        return {
+          ok: verified,
+          error: !verified ? "User doesn't verified" : null,
+        };
+      }
     } catch (error) {
       console.error(error);
     }

@@ -18,7 +18,7 @@ import { JwtMiddleware } from './jwt/middleware/jwt.middleware';
 import { AuthModule } from './auth/auth.module';
 
 import { User } from './users/entities/user.entity';
-import { Verificarion } from './users/entities/verification.entity';
+import { Verification } from './users/entities/verification.entity';
 
 @Module({
   imports: [
@@ -34,7 +34,7 @@ import { Verificarion } from './users/entities/verification.entity';
       database: process.env.DB_NAME,
       synchronize: true,
       logging: true,
-      entities: [User, Verificarion],
+      entities: [User, Verification],
     }),
     GraphQLModule.forRoot({
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),

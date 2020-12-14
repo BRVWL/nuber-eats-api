@@ -7,7 +7,7 @@ type User {
   createdAt: Float!
   updatedAt: Float!
   email: String!
-  virified: Boolean!
+  verified: Boolean!
   password: String!
   role: UserRole!
 }
@@ -42,6 +42,11 @@ type UserProfileOutput {
   user: User
 }
 
+type VerifyEmailOutput {
+  error: String
+  ok: Boolean!
+}
+
 type Query {
   me: User!
   userProfile(userId: Float!): UserProfileOutput!
@@ -50,6 +55,7 @@ type Query {
 
 type Mutation {
   createUser(data: UserInput!): UserOutput!
+  verifyEmail(data: VerifyEmailInput!): VerifyEmailOutput!
   login(data: LoginInput!): LoginOutput!
   updateUser(id: Float!, data: UpdateUserInputType!): UpdateUserOutput!
 }
@@ -58,6 +64,10 @@ input UserInput {
   email: String!
   password: String!
   role: UserRole!
+}
+
+input VerifyEmailInput {
+  code: String!
 }
 
 input LoginInput {
