@@ -23,15 +23,11 @@ export class UserResolver {
 
   @UseGuards(AuthGuard)
   @Query((_willReturn) => UserProfileOutput)
-  async userProfile(
+  userProfile(
     @Args() userProfileInput: UserProfileInput,
   ): Promise<UserProfileOutput> {
     const { userId } = userProfileInput;
-    try {
-      return this.userService.findById(userId);
-    } catch (error) {
-      console.error(error);
-    }
+    return this.userService.findById(userId);
   }
 
   @Query((_willReturn) => [User])
@@ -43,49 +39,25 @@ export class UserResolver {
   async createUser(
     @Args('data') createUserDto: UserInput,
   ): Promise<UserOutput> {
-    try {
-      return this.userService.createUser(createUserDto);
-    } catch (error) {
-      console.error(error);
-    }
+    return this.userService.createUser(createUserDto);
   }
 
   @Mutation((_willReturn) => VerifyEmailOutput)
-  async verifyEmail(
+  verifyEmail(
     @Args('data') verifyEmailInput: VerifyEmailInput,
   ): Promise<VerifyEmailOutput> {
     const { code } = verifyEmailInput;
-    try {
-      if (code) {
-        const verified = await this.userService.verifyEmail(code);
-        return {
-          ok: verified,
-          error: !verified ? "User doesn't verified" : null,
-        };
-      }
-    } catch (error) {
-      console.error(error);
-    }
+    return this.userService.verifyEmail(code);
   }
 
   @Mutation((_willReturn) => LoginOutput)
-  async login(@Args('data') loginDto: LoginInput): Promise<LoginOutput> {
+  login(@Args('data') loginDto: LoginInput): Promise<LoginOutput> {
     const { email, password } = loginDto;
-    try {
-      return this.userService.login({ email, password });
-    } catch (error) {
-      console.error(error);
-    }
+    return this.userService.login({ email, password });
   }
 
   @Mutation((_willReturn) => UpdateUserOutput)
-  async updateUser(
-    @Args() updateUserDto: UpdateUserDto,
-  ): Promise<UpdateUserOutput> {
-    try {
-      return await this.userService.updateUser(updateUserDto);
-    } catch (error) {
-      console.error(error);
-    }
+  updateUser(@Args() updateUserDto: UpdateUserDto): Promise<UpdateUserOutput> {
+    return this.userService.updateUser(updateUserDto);
   }
 }

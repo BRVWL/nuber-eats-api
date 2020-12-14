@@ -7,6 +7,7 @@ import { UpdateUserDto, UpdateUserOutput } from '../dto/updateUser.dto';
 import { User } from '../entities/user.entity';
 import { JwtService } from 'src/jwt/services/jwt.service';
 import { Verification } from '../entities/verification.entity';
+import { VerifyEmailOutput } from '../dto/verify-email.dto';
 
 @Injectable()
 export class UserService {
@@ -75,19 +76,27 @@ export class UserService {
     }
   }
 
-  async verifyEmail(code: string): Promise<boolean> {
+  async verifyEmail(code: string): Promise<VerifyEmailOutput> {
     try {
-      const verified = await this.verification.findOne(
-        { code },
-        { relations: ['user'] },
-      );
-      if (verified) {
-        verified.user.verified = true;
-        await this.users.save(verified.user);
-        await this.verification.delete({ id: verified.id });
-        return true;
+      if (code) {
+        const verified = await this.verification.findOne(
+          { code },
+          { relations: ['user'] },
+        );
+        if (verified) {
+          verified.user.verified = true;
+          await this.users.save(verified.user);
+          await this.verification.delete({ id: verified.id });
+          return {
+            ok: true,
+            error: null,
+          };
+        }
       }
-      return false;
+      return {
+        ok: false,
+        error: "User doesn't verified",
+      };
     } catch (error) {
       console.error(error);
     }
