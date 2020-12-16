@@ -3,28 +3,28 @@ import got from 'got';
 import * as FormData from 'form-data';
 import { MailOptions } from './mail.interface';
 
+interface ITemplateVars {
+  [key: string]: string;
+}
 @Injectable()
 export class MailService {
   constructor(@Inject('options') private readonly options: MailOptions) {}
   private async sendEmail(
-    to = 'jindnbua@gmail.com',
+    to: string,
     subject: string,
-    template = 'verify',
-    templateVars = {
-      code: '',
-      userName: '',
-    },
+    template: string,
+    templateVars: ITemplateVars,
   ) {
     const form = new FormData();
     form.append('from', this.options.fromEmail);
     form.append('to', to);
     form.append('subject', subject);
-    form.append('template', template); // use named template
+    form.append('template', template); // use saved template on mailgun
     Object.keys(templateVars).forEach((key) =>
       form.append(`v:${key}`, templateVars[key]),
     );
     try {
-      const response = await got.post(
+      await got.post(
         `https://api.mailgun.net/v3/${this.options.domain}/messages`,
         {
           headers: {
@@ -38,5 +38,12 @@ export class MailService {
     } catch (error) {
       console.error(error);
     }
+  }
+  // TODO: now i dont have ability to send mails to any email. For now can use only 'jindnbua@gmail.com in mail arg
+  sendVerificationEmail(email, code: string) {
+    this.sendEmail(email, 'Please verify your email', 'verify', {
+      code,
+      userName: email,
+    });
   }
 }

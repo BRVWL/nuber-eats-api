@@ -8,6 +8,7 @@ import { User } from '../entities/user.entity';
 import { JwtService } from 'src/jwt/services/jwt.service';
 import { Verification } from '../entities/verification.entity';
 import { VerifyEmailOutput } from '../dto/verify-email.dto';
+import { MailService } from 'src/mail/mail.service';
 
 @Injectable()
 export class UserService {
@@ -19,6 +20,8 @@ export class UserService {
     private verification: Repository<Verification>,
 
     private jwtService: JwtService,
+
+    private mailService: MailService,
   ) {}
 
   async findById(id: number): Promise<UserOutput> {
@@ -55,15 +58,19 @@ export class UserService {
           error: 'User already exists',
         };
       }
-      const newUser: User = await this.users.create({ email, password, role });
+      const _user: User = await this.users.create({ email, password, role });
       // Save user
-      const savedUser: User = await this.users.save(newUser);
+      const user: User = await this.users.save(_user);
       // Email verification
-      const verification = await this.verification.create({ user: savedUser });
-      await this.verification.save(verification);
+      const _verification = await this.verification.create({ user });
+      const verification = await this.verification.save(_verification);
+      await this.mailService.sendVerificationEmail(
+        user.email,
+        verification.code,
+      );
       return {
         ok: true,
-        user: savedUser,
+        user,
         error: null,
       };
     } catch (error) {
@@ -147,27 +154,31 @@ export class UserService {
     const { id, data } = updateUserDto;
     const { email, password, role } = data;
     try {
-      const user = await this.users.findOne({ id });
+      const _user = await this.users.findOne({ id });
       if (email) {
         // change mail
-        user.email = email;
+        _user.email = email;
         // unverified
-        user.verified = false;
+        _user.verified = false;
         // create verification code
-        const verification = await this.verification.create({ user });
-        await this.verification.save(verification);
+        const _verification = await this.verification.create({ user: _user });
+        const verification = await this.verification.save(_verification);
+        await this.mailService.sendVerificationEmail(
+          _user.email,
+          verification.code,
+        );
       }
       if (password) {
-        user.password = password;
+        _user.password = password;
       }
       if (role) {
-        user.role = role;
+        _user.role = role;
       }
-      const editedUser = await this.users.save(user);
+      const user = await this.users.save(_user);
       return {
         ok: true,
         error: null,
-        user: editedUser,
+        user,
       };
     } catch (error) {
       return {
