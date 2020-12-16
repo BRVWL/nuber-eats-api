@@ -10,12 +10,40 @@ type User {
   verified: Boolean!
   password: String!
   role: UserRole!
+  restaurants: [Restaurant!]!
 }
 
 enum UserRole {
   client
   owner
   delivery
+}
+
+type Restaurant {
+  id: Float!
+  createdAt: Float!
+  updatedAt: Float!
+  name: String!
+  coverImage: String!
+  address: String!
+  category: Category
+  user: User!
+}
+
+type Category {
+  id: Float!
+  createdAt: Float!
+  updatedAt: Float!
+  name: String!
+  image: String!
+  slug: String!
+  restaurants: [Restaurant!]!
+}
+
+type CreateRestaurantOutput {
+  error: String
+  ok: Boolean!
+  restaurant: Restaurant
 }
 
 type UserOutput {
@@ -48,16 +76,33 @@ type VerifyEmailOutput {
 }
 
 type Query {
+  restaurants: [Restaurant!]!
   me: User!
   userProfile(userId: Float!): UserProfileOutput!
   users: [User!]!
 }
 
 type Mutation {
+  createRestaurant(data: CreateRestaurantInput!): CreateRestaurantOutput!
+  updateRestaurant(id: Float!, data: UpdateRestaurantInputType!): Boolean!
   createUser(data: UserInput!): UserOutput!
   verifyEmail(data: VerifyEmailInput!): VerifyEmailOutput!
   login(data: LoginInput!): LoginOutput!
   updateUser(id: Float!, data: UpdateUserInputType!): UpdateUserOutput!
+}
+
+input CreateRestaurantInput {
+  name: String!
+  coverImage: String!
+  address: String!
+  categoryName: String!
+}
+
+input UpdateRestaurantInputType {
+  name: String
+  coverImage: String
+  address: String
+  categoryName: String
 }
 
 input UserInput {

@@ -9,8 +9,8 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { join } from 'path';
-// import { RestaurantsModule } from './restaurants/restaurants.module';
-// import { Restaurant } from './restaurants/entities/restaurant.entity';
+import { RestaurantsModule } from './restaurants/restaurants.module';
+import { Restaurant } from './restaurants/entities/restaurant.entity';
 import { UsersModule } from './users/users.module';
 import { CommonModule } from './common/common.module';
 import { JwtModule } from './jwt/jwt.module';
@@ -20,6 +20,7 @@ import { AuthModule } from './auth/auth.module';
 import { User } from './users/entities/user.entity';
 import { Verification } from './users/entities/verification.entity';
 import { MailModule } from './mail/mail.module';
+import { Category } from './restaurants/entities/category.entity';
 
 @Module({
   imports: [
@@ -35,13 +36,14 @@ import { MailModule } from './mail/mail.module';
       database: process.env.DB_NAME,
       synchronize: true,
       logging: true,
-      entities: [User, Verification],
+      entities: [User, Verification, Restaurant, Category],
     }),
     GraphQLModule.forRoot({
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       context: ({ req }) => ({ user: req['user'] }),
     }),
     UsersModule,
+    RestaurantsModule,
     CommonModule,
     JwtModule.forRoot({
       privateKey: process.env.JWT_SECRET,
