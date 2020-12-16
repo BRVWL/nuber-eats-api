@@ -44,7 +44,7 @@ export class UserService {
     }
   }
 
-  getAll(): Promise<User[]> {
+  async getAll(): Promise<User[]> {
     return this.users.find();
   }
 
@@ -54,7 +54,7 @@ export class UserService {
       if (existingUser) {
         return {
           ok: false,
-          user: existingUser,
+          user: null,
           error: 'User already exists',
         };
       }
@@ -78,7 +78,46 @@ export class UserService {
       return {
         ok: false,
         user: null,
-        error,
+        error: 'Can not create a user',
+      };
+    }
+  }
+
+  async updateUser(updateUserDto: UpdateUserDto): Promise<UpdateUserOutput> {
+    const { id, data } = updateUserDto;
+    const { email, password, role } = data;
+    try {
+      const _user = await this.users.findOne({ id });
+      if (email) {
+        // change mail
+        _user.email = email;
+        // unverified
+        _user.verified = false;
+        // create verification code
+        const _verification = await this.verification.create({ user: _user });
+        const verification = await this.verification.save(_verification);
+        await this.mailService.sendVerificationEmail(
+          _user.email,
+          verification.code,
+        );
+      }
+      if (password) {
+        _user.password = password;
+      }
+      if (role) {
+        _user.role = role;
+      }
+      const user = await this.users.save(_user);
+      return {
+        ok: true,
+        error: null,
+        user,
+      };
+    } catch (error) {
+      return {
+        ok: false,
+        error: 'Error while update user',
+        user: null,
       };
     }
   }
@@ -146,45 +185,6 @@ export class UserService {
         ok: false,
         token: null,
         error,
-      };
-    }
-  }
-
-  async updateUser(updateUserDto: UpdateUserDto): Promise<UpdateUserOutput> {
-    const { id, data } = updateUserDto;
-    const { email, password, role } = data;
-    try {
-      const _user = await this.users.findOne({ id });
-      if (email) {
-        // change mail
-        _user.email = email;
-        // unverified
-        _user.verified = false;
-        // create verification code
-        const _verification = await this.verification.create({ user: _user });
-        const verification = await this.verification.save(_verification);
-        await this.mailService.sendVerificationEmail(
-          _user.email,
-          verification.code,
-        );
-      }
-      if (password) {
-        _user.password = password;
-      }
-      if (role) {
-        _user.role = role;
-      }
-      const user = await this.users.save(_user);
-      return {
-        ok: true,
-        error: null,
-        user,
-      };
-    } catch (error) {
-      return {
-        ok: false,
-        error: 'Error while update user',
-        user: null,
       };
     }
   }

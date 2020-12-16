@@ -4,7 +4,9 @@ import * as FormData from 'form-data';
 import { MailOptions } from './mail.interface';
 
 interface ITemplateVars {
-  [key: string]: string;
+  // [key: string]: string;
+  code: string;
+  userName: string;
 }
 @Injectable()
 export class MailService {
@@ -39,7 +41,7 @@ export class MailService {
       console.error(error);
     }
   }
-  // TODO: now i dont have ability to send mails to any email. For now can use only 'jindnbua@gmail.com in mail arg
+  // TODO: now i dont have ability to send mails to any email. For now I can use only 'jindnbua@gmail.com in mail arg
   sendVerificationEmail(email, code: string) {
     this.sendEmail(email, 'Please verify your email', 'verify', {
       code,
