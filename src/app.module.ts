@@ -19,6 +19,7 @@ import { AuthModule } from './auth/auth.module';
 
 import { User } from './users/entities/user.entity';
 import { Verification } from './users/entities/verification.entity';
+import { MailModule } from './mail/mail.module';
 
 @Module({
   imports: [
@@ -46,6 +47,11 @@ import { Verification } from './users/entities/verification.entity';
       privateKey: process.env.JWT_SECRET,
     }),
     AuthModule,
+    MailModule.forRoot({
+      apiKey: process.env.MAIL_API_KEY,
+      domain: process.env.MAIL_API_DOMAIN,
+      fromEmail: process.env.MAIL_FROM_EMAIL,
+    }),
   ],
   controllers: [],
   providers: [],
