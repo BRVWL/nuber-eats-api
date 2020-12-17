@@ -2,6 +2,7 @@ import { UseGuards } from '@nestjs/common';
 import { Resolver, Query, Args, Mutation } from '@nestjs/graphql';
 import { AuthUser } from 'src/auth/auth-user.decorator';
 import { AuthGuard } from 'src/auth/guard/auth.guard';
+import { Role } from 'src/auth/role.decorator';
 import { UserInput, UserOutput } from './dto/createUser.dto';
 import { LoginInput, LoginOutput } from './dto/login.dto';
 import { UpdateUserDto, UpdateUserOutput } from './dto/updateUser.dto';
@@ -16,12 +17,12 @@ export class UserResolver {
   constructor(private readonly userService: UserService) {}
 
   @Query((_willReturn) => User)
-  @UseGuards(AuthGuard)
+  @Role(['any'])
   me(@AuthUser() authUser: User) {
     return authUser;
   }
 
-  @UseGuards(AuthGuard)
+  @Role(['any'])
   @Query((_willReturn) => UserProfileOutput)
   userProfile(
     @Args() userProfileInput: UserProfileInput,
@@ -30,15 +31,14 @@ export class UserResolver {
     return this.userService.findById(userId);
   }
 
+  @Role(['any'])
   @Query((_willReturn) => [User])
   users(): Promise<User[]> {
     return this.userService.getAll();
   }
 
   @Mutation((_willReturn) => UserOutput)
-  async createUser(
-    @Args('data') createUserDto: UserInput,
-  ): Promise<UserOutput> {
+  createUser(@Args('data') createUserDto: UserInput): Promise<UserOutput> {
     return this.userService.createUser(createUserDto);
   }
 
@@ -56,6 +56,7 @@ export class UserResolver {
     return this.userService.login({ email, password });
   }
 
+  @Role(['any'])
   @Mutation((_willReturn) => UpdateUserOutput)
   updateUser(@Args() updateUserDto: UpdateUserDto): Promise<UpdateUserOutput> {
     return this.userService.updateUser(updateUserDto);
