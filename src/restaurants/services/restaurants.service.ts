@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/users/entities/user.entity';
 import { Repository } from 'typeorm';
+import { AllCategoriesOutput } from '../dto/allCategories.dto';
 import {
   CreateRestaurantInput,
   CreateRestaurantOutput,
@@ -137,6 +138,24 @@ export class RestaurantsService {
       };
     } catch (error) {
       console.error(error);
+    }
+  }
+
+  async allCategories(): Promise<AllCategoriesOutput> {
+    try {
+      const categories = await this.category.find();
+      return {
+        ok: true,
+        error: null,
+        categories,
+      };
+    } catch (error) {
+      console.error(error);
+      return {
+        ok: false,
+        error: 'Can not find categories',
+        categories: null,
+      };
     }
   }
 }

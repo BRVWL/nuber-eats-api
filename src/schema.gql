@@ -40,6 +40,12 @@ type Restaurant {
   user: User!
 }
 
+type AllCategoriesOutput {
+  error: String
+  ok: Boolean!
+  categories: [Category!]!
+}
+
 type CreateRestaurantOutput {
   error: String
   ok: Boolean!
@@ -88,6 +94,7 @@ type VerifyEmailOutput {
 
 type Query {
   restaurants: [Restaurant!]!
+  allCategories: AllCategoriesOutput!
   me: User!
   userProfile(userId: Float!): UserProfileOutput!
   users: [User!]!
