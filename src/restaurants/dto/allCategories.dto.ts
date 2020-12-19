@@ -4,6 +4,6 @@ import { Category } from '../entities/category.entity';
 
 @ObjectType()
 export class AllCategoriesOutput extends MutationOutput {
-  @Field((type) => [Category])
-  categories: Category[];
+  @Field((type) => [Category], { nullable: true })
+  categories?: Category[];
 }
