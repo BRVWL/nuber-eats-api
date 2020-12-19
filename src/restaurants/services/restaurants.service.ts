@@ -7,6 +7,10 @@ import {
   CreateRestaurantOutput,
 } from '../dto/createRestaurant.dto';
 import {
+  DeleteRestaurantInput,
+  DeleteRestaurantOutput,
+} from '../dto/deleteRestaurant.dto';
+import {
   UpdateRestaurantDto,
   UpdateRestaurantOutput,
 } from '../dto/updateRestaurant.dto';
@@ -101,6 +105,38 @@ export class RestaurantsService {
         restaurant: null,
         error: 'Can not update restaurant',
       };
+    }
+  }
+
+  async deleteRestaurant(
+    owner: User,
+    deleteRestaurantInput: DeleteRestaurantInput,
+  ): Promise<DeleteRestaurantOutput> {
+    const { restaurantId } = deleteRestaurantInput;
+    try {
+      const restaurant = await this.restaurants.findOne(
+        { id: restaurantId },
+        { relations: ['category', 'user'] },
+      );
+      if (!restaurant) {
+        return {
+          ok: false,
+          error: 'Restaurant not found',
+        };
+      }
+      if (owner.id !== restaurant.userId) {
+        return {
+          ok: false,
+          error: 'Only owner can delete this restaurant',
+        };
+      }
+      await this.restaurants.delete(restaurantId);
+      return {
+        ok: true,
+        error: null,
+      };
+    } catch (error) {
+      console.error(error);
     }
   }
 }

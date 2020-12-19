@@ -10,8 +10,8 @@ import { User } from 'src/users/entities/user.entity';
 export class Restaurant extends CoreEntity {
   @Field((_is) => String)
   @Column()
-  @IsString() // dto validation
-  @Length(3, 45) // dto validation
+  @IsString()
+  @Length(3, 45)
   name: string;
 
   @Field((_is) => String)
