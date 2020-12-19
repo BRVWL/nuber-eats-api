@@ -6,19 +6,23 @@ import {
   CreateRestaurantInput,
   CreateRestaurantOutput,
 } from '../dto/createRestaurant.dto';
-import { UpdateRestaurantDto } from '../dto/updateRestaurant.dto';
+import {
+  UpdateRestaurantDto,
+  UpdateRestaurantOutput,
+} from '../dto/updateRestaurant.dto';
 import { Category } from '../entities/category.entity';
 import { Restaurant } from '../entities/restaurant.entity';
+import { CategoryRepository } from '../repositories/category.repository';
 
 @Injectable()
 export class RestaurantsService {
   constructor(
     @InjectRepository(Restaurant) private restaurants: Repository<Restaurant>,
-    @InjectRepository(Category) private category: Repository<Category>,
+    private category: CategoryRepository,
   ) {}
 
   getAll(): Promise<Restaurant[]> {
-    return this.restaurants.find();
+    return this.restaurants.find({ relations: ['category', 'user'] });
   }
 
   async createRestaurant(
@@ -29,24 +33,14 @@ export class RestaurantsService {
       const newRestaurant: Restaurant = await this.restaurants.create(
         createRestaurantInput,
       );
-      const categoryName = createRestaurantInput.categoryName
-        .trim()
-        .toLocaleLowerCase();
-      const categorySlug = categoryName.replace(/ /g, '-');
-      let category = await this.category.findOne({ slug: categorySlug });
-      if (!category) {
-        const newCategory = await this.category.create({
-          name: categoryName,
-          slug: categorySlug,
-        });
-        category = await this.category.save(newCategory);
-      }
+      const category = this.category.getOrCreateCategory(
+        createRestaurantInput.categoryName,
+      );
       const restaurant = await this.restaurants.save({
         user: owner,
         category,
         ...newRestaurant,
       });
-
       return {
         ok: true,
         restaurant,
@@ -62,8 +56,51 @@ export class RestaurantsService {
     }
   }
 
-  updateRestaurant(updateRestaurantDto: UpdateRestaurantDto) {
+  async updateRestaurant(
+    owner: User,
+    updateRestaurantDto: UpdateRestaurantDto,
+  ): Promise<UpdateRestaurantOutput> {
     const { id, data } = updateRestaurantDto;
-    return this.restaurants.update(id, { ...data });
+    try {
+      const restaurant = await this.restaurants.findOne(
+        { id },
+        { relations: ['category', 'user'] },
+      );
+      if (!restaurant) {
+        return {
+          ok: false,
+          restaurant: null,
+          error: 'Restaurant not found',
+        };
+      }
+      if (owner.id !== restaurant.userId) {
+        return {
+          ok: false,
+          restaurant: null,
+          error: 'Only owner can edit this restaurant',
+        };
+      }
+      let category: Category = null;
+      if (data.categoryName) {
+        category = await this.category.getOrCreateCategory(data.categoryName);
+      }
+      const newRestaurant = await this.restaurants.save({
+        id,
+        ...data,
+        ...(category && { category }),
+      });
+      return {
+        ok: true,
+        restaurant: newRestaurant,
+        error: null,
+      };
+    } catch (error) {
+      console.error(error);
+      return {
+        ok: false,
+        restaurant: null,
+        error: 'Can not update restaurant',
+      };
+    }
   }
 }
