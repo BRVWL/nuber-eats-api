@@ -65,6 +65,13 @@ type DeleteRestaurantOutput {
   ok: Boolean!
 }
 
+type RestaurantsOutput {
+  error: String
+  ok: Boolean!
+  totalPages: Float
+  restaurants: [Restaurant!]
+}
+
 type UpdateRestaurantOutput {
   error: String
   ok: Boolean!
@@ -101,12 +108,16 @@ type VerifyEmailOutput {
 }
 
 type Query {
-  restaurants: [Restaurant!]!
+  restaurants(data: RestaurantsInput!): RestaurantsOutput!
   allCategories: AllCategoriesOutput!
   getCategory(data: CategoryInput!): CategoryOutput!
   me: User!
   userProfile(userId: Float!): UserProfileOutput!
   users: [User!]!
+}
+
+input RestaurantsInput {
+  page: Float = 1
 }
 
 input CategoryInput {

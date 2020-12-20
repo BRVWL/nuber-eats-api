@@ -19,6 +19,7 @@ import {
   DeleteRestaurantInput,
   DeleteRestaurantOutput,
 } from './dto/deleteRestaurant.dto';
+import { RestaurantsInput, RestaurantsOutput } from './dto/restaurants.dto';
 import {
   UpdateRestaurantDto,
   UpdateRestaurantOutput,
@@ -31,10 +32,12 @@ import { RestaurantsService } from './services/restaurants.service';
 export class RestaurantsResolver {
   constructor(private readonly restaurantService: RestaurantsService) {}
 
-  @Query((_willReturn) => [Restaurant])
+  @Query((_willReturn) => RestaurantsOutput)
   @Role(['any'])
-  restaurants(): Promise<Restaurant[]> {
-    return this.restaurantService.getAll();
+  async restaurants(
+    @Args('data') restaurantsInput: RestaurantsInput,
+  ): Promise<RestaurantsOutput> {
+    return this.restaurantService.getAll(restaurantsInput);
   }
 
   @Mutation((_willReturn) => CreateRestaurantOutput)

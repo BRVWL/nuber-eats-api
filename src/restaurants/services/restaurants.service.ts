@@ -12,6 +12,7 @@ import {
   DeleteRestaurantInput,
   DeleteRestaurantOutput,
 } from '../dto/deleteRestaurant.dto';
+import { RestaurantsInput, RestaurantsOutput } from '../dto/restaurants.dto';
 import {
   UpdateRestaurantDto,
   UpdateRestaurantOutput,
@@ -27,8 +28,36 @@ export class RestaurantsService {
     private category: CategoryRepository,
   ) {}
 
-  getAll(): Promise<Restaurant[]> {
-    return this.restaurants.find({ relations: ['category', 'user'] });
+  async getAll(restaurantsInput: RestaurantsInput): Promise<RestaurantsOutput> {
+    const { page } = restaurantsInput;
+    try {
+      const [restaurants, totalItems] = await this.restaurants.findAndCount({
+        take: 25,
+        skip: (page - 1) * 25,
+      });
+      if (!restaurants) {
+        return {
+          ok: false,
+          error: 'Can not find restaurants',
+        };
+      }
+      return {
+        ok: true,
+        error: null,
+        restaurants,
+        totalPages: Math.ceil(totalItems / 25),
+      };
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async countRestaurants(category: Category): Promise<number> {
+    try {
+      return await this.restaurants.count({ category });
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   async createRestaurant(
@@ -157,14 +186,6 @@ export class RestaurantsService {
         error: 'Can not find categories',
         categories: null,
       };
-    }
-  }
-
-  async countRestaurants(category: Category): Promise<number> {
-    try {
-      return await this.restaurants.count({ category });
-    } catch (error) {
-      console.error(error);
     }
   }
 
