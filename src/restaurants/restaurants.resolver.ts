@@ -91,7 +91,7 @@ export class CategoryResolver {
   }
 
   @Query((_willReturn) => CategoryOutput)
-  async category(
+  async getCategory(
     @Args('data') categoryInput: CategoryInput,
   ): Promise<CategoryOutput> {
     return this.restaurantService.findCategoryBySlug(categoryInput);

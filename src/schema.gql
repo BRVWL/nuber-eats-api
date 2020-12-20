@@ -50,6 +50,7 @@ type AllCategoriesOutput {
 type CategoryOutput {
   error: String
   ok: Boolean!
+  totalPages: Float
   category: Category
 }
 
@@ -102,13 +103,14 @@ type VerifyEmailOutput {
 type Query {
   restaurants: [Restaurant!]!
   allCategories: AllCategoriesOutput!
-  category(data: CategoryInput!): CategoryOutput!
+  getCategory(data: CategoryInput!): CategoryOutput!
   me: User!
   userProfile(userId: Float!): UserProfileOutput!
   users: [User!]!
 }
 
 input CategoryInput {
+  page: Float = 1
   slug: String!
 }
 
