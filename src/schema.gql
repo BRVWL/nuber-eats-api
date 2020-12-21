@@ -65,6 +65,12 @@ type DeleteRestaurantOutput {
   ok: Boolean!
 }
 
+type RestaurantOutput {
+  error: String
+  ok: Boolean!
+  restaurant: Restaurant
+}
+
 type RestaurantsOutput {
   error: String
   ok: Boolean!
@@ -108,12 +114,17 @@ type VerifyEmailOutput {
 }
 
 type Query {
+  getRestaurant(data: RestaurantInput!): RestaurantOutput!
   restaurants(data: RestaurantsInput!): RestaurantsOutput!
   allCategories: AllCategoriesOutput!
   getCategory(data: CategoryInput!): CategoryOutput!
   me: User!
   userProfile(userId: Float!): UserProfileOutput!
   users: [User!]!
+}
+
+input RestaurantInput {
+  restaurantId: Float!
 }
 
 input RestaurantsInput {

@@ -12,6 +12,7 @@ import {
   DeleteRestaurantInput,
   DeleteRestaurantOutput,
 } from '../dto/deleteRestaurant.dto';
+import { RestaurantInput, RestaurantOutput } from '../dto/restaurant.dto';
 import { RestaurantsInput, RestaurantsOutput } from '../dto/restaurants.dto';
 import {
   UpdateRestaurantDto,
@@ -27,6 +28,26 @@ export class RestaurantsService {
     @InjectRepository(Restaurant) private restaurants: Repository<Restaurant>,
     private category: CategoryRepository,
   ) {}
+
+  async getOne(restaurantInput: RestaurantInput): Promise<RestaurantOutput> {
+    const { restaurantId } = restaurantInput;
+    try {
+      const restaurant = await this.restaurants.findOne({ id: restaurantId });
+      if (!restaurant) {
+        return {
+          ok: false,
+          error: 'Can not find restaurant',
+        };
+      }
+      return {
+        ok: true,
+        error: null,
+        restaurant,
+      };
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
   async getAll(restaurantsInput: RestaurantsInput): Promise<RestaurantsOutput> {
     const { page } = restaurantsInput;
@@ -65,7 +86,7 @@ export class RestaurantsService {
     createRestaurantInput: CreateRestaurantInput,
   ): Promise<CreateRestaurantOutput> {
     try {
-      const newRestaurant: Restaurant = await this.restaurants.create(
+      const newRestaurant: Restaurant = this.restaurants.create(
         createRestaurantInput,
       );
       const category = this.category.getOrCreateCategory(
