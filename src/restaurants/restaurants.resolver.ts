@@ -22,6 +22,10 @@ import {
 import { RestaurantInput, RestaurantOutput } from './dto/restaurant.dto';
 import { RestaurantsInput, RestaurantsOutput } from './dto/restaurants.dto';
 import {
+  SearchRestaurantInput,
+  SerachRestaurantOutput,
+} from './dto/searchRestaurant.dto';
+import {
   UpdateRestaurantDto,
   UpdateRestaurantOutput,
 } from './dto/updateRestaurant.dto';
@@ -47,6 +51,14 @@ export class RestaurantsResolver {
     @Args('data') restaurantsInput: RestaurantsInput,
   ): Promise<RestaurantsOutput> {
     return this.restaurantService.getAll(restaurantsInput);
+  }
+
+  @Query((_willReturn) => SerachRestaurantOutput)
+  @Role(['any'])
+  async searchRestaurant(
+    @Args('data') searchRestaurantInput: SearchRestaurantInput,
+  ): Promise<SerachRestaurantOutput> {
+    return this.restaurantService.searchRestaurantByName(searchRestaurantInput);
   }
 
   @Mutation((_willReturn) => CreateRestaurantOutput)
