@@ -13,6 +13,25 @@ type Category {
   restaurantCount: Float!
 }
 
+type Order {
+  id: Float!
+  createdAt: Float!
+  updatedAt: Float!
+  customer: User
+  deliver: User
+  restaurant: Restaurant!
+  dishes: [Dish!]!
+  totalPrice: Float!
+  status: OrderStatus!
+}
+
+enum OrderStatus {
+  Pending
+  Cooking
+  PickedUp
+  Delivered
+}
+
 type User {
   id: Float!
   createdAt: Float!
@@ -22,6 +41,8 @@ type User {
   password: String!
   role: UserRole!
   restaurants: [Restaurant!]!
+  orders: [Order!]!
+  rides: [Order!]!
 }
 
 enum UserRole {
@@ -38,6 +59,7 @@ type Restaurant {
   coverImage: String!
   address: String!
   menu: [Dish!]!
+  orders: [Order!]!
   category: Category
   user: User!
 }
