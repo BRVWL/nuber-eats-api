@@ -4,6 +4,7 @@ import { User } from 'src/users/entities/user.entity';
 import { ILike, Raw, Repository } from 'typeorm';
 import { AllCategoriesOutput } from '../dto/allCategories.dto';
 import { CategoryInput, CategoryOutput } from '../dto/category.dto';
+import { CreateDishInput, CreateDishOutput } from '../dto/createDish.dto';
 import {
   CreateRestaurantInput,
   CreateRestaurantOutput,
@@ -16,13 +17,14 @@ import { RestaurantInput, RestaurantOutput } from '../dto/restaurant.dto';
 import { RestaurantsInput, RestaurantsOutput } from '../dto/restaurants.dto';
 import {
   SearchRestaurantInput,
-  SerachRestaurantOutput,
+  SearchRestaurantOutput,
 } from '../dto/searchRestaurant.dto';
 import {
   UpdateRestaurantDto,
   UpdateRestaurantOutput,
 } from '../dto/updateRestaurant.dto';
 import { Category } from '../entities/category.entity';
+import { Dish } from '../entities/dish.entity';
 import { Restaurant } from '../entities/restaurant.entity';
 import { CategoryRepository } from '../repositories/category.repository';
 
@@ -30,13 +32,17 @@ import { CategoryRepository } from '../repositories/category.repository';
 export class RestaurantsService {
   constructor(
     @InjectRepository(Restaurant) private restaurants: Repository<Restaurant>,
+    @InjectRepository(Dish) private dishes: Repository<Dish>,
     private category: CategoryRepository,
   ) {}
 
   async getOne(restaurantInput: RestaurantInput): Promise<RestaurantOutput> {
     const { restaurantId } = restaurantInput;
     try {
-      const restaurant = await this.restaurants.findOne({ id: restaurantId });
+      const restaurant = await this.restaurants.findOne(
+        { id: restaurantId },
+        { relations: ['menu'] },
+      );
       if (!restaurant) {
         return {
           ok: false,
@@ -80,7 +86,7 @@ export class RestaurantsService {
   // TODO: move copy past code (pagination stuff) to custom repository
   async searchRestaurantByName(
     searchRestaurantInput: SearchRestaurantInput,
-  ): Promise<SerachRestaurantOutput> {
+  ): Promise<SearchRestaurantOutput> {
     const { page, query } = searchRestaurantInput;
     try {
       const [restaurants, totalItems] = await this.restaurants.findAndCount({
@@ -271,6 +277,43 @@ export class RestaurantsService {
           ...category,
         },
         totalPages: Math.ceil(countOfRestaurants / 25),
+      };
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async createDishByRestaurantId(
+    owner: User,
+    createDishInput: CreateDishInput,
+  ): Promise<CreateDishOutput> {
+    const { restaurantId } = createDishInput;
+    try {
+      const restaurant = await this.restaurants.findOne({ id: restaurantId });
+      if (!restaurant) {
+        return {
+          ok: false,
+          error: 'Can not find the restaurant',
+        };
+      }
+      if (owner.id !== restaurant.userId) {
+        return {
+          ok: false,
+          error: 'You can not create the dish in this not own restaurant',
+        };
+      }
+      const _dish = this.dishes.create({ ...createDishInput, restaurant });
+      const dish = await this.dishes.save(_dish);
+      if (!dish) {
+        return {
+          ok: false,
+          error: 'Can not save the dish',
+        };
+      }
+      return {
+        ok: true,
+        error: null,
+        dish,
       };
     } catch (error) {
       console.error(error);

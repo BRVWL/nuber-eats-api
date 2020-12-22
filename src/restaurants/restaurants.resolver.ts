@@ -11,6 +11,7 @@ import { Role } from 'src/auth/role.decorator';
 import { User, UserRole } from 'src/users/entities/user.entity';
 import { AllCategoriesOutput } from './dto/allCategories.dto';
 import { CategoryInput, CategoryOutput } from './dto/category.dto';
+import { CreateDishInput, CreateDishOutput } from './dto/createDish.dto';
 import {
   CreateRestaurantInput,
   CreateRestaurantOutput,
@@ -23,13 +24,14 @@ import { RestaurantInput, RestaurantOutput } from './dto/restaurant.dto';
 import { RestaurantsInput, RestaurantsOutput } from './dto/restaurants.dto';
 import {
   SearchRestaurantInput,
-  SerachRestaurantOutput,
+  SearchRestaurantOutput,
 } from './dto/searchRestaurant.dto';
 import {
   UpdateRestaurantDto,
   UpdateRestaurantOutput,
 } from './dto/updateRestaurant.dto';
 import { Category } from './entities/category.entity';
+import { Dish } from './entities/dish.entity';
 import { Restaurant } from './entities/restaurant.entity';
 import { RestaurantsService } from './services/restaurants.service';
 
@@ -53,11 +55,11 @@ export class RestaurantsResolver {
     return this.restaurantService.getAll(restaurantsInput);
   }
 
-  @Query((_willReturn) => SerachRestaurantOutput)
+  @Query((_willReturn) => SearchRestaurantOutput)
   @Role(['any'])
   async searchRestaurant(
     @Args('data') searchRestaurantInput: SearchRestaurantInput,
-  ): Promise<SerachRestaurantOutput> {
+  ): Promise<SearchRestaurantOutput> {
     return this.restaurantService.searchRestaurantByName(searchRestaurantInput);
   }
 
@@ -119,5 +121,22 @@ export class CategoryResolver {
     @Args('data') categoryInput: CategoryInput,
   ): Promise<CategoryOutput> {
     return this.restaurantService.findCategoryBySlug(categoryInput);
+  }
+}
+
+@Resolver((of) => Dish)
+export class DishResolver {
+  constructor(private readonly restaurantService: RestaurantsService) {}
+
+  @Mutation((willReturn) => CreateDishOutput)
+  @Role([UserRole.owner])
+  async createDish(
+    @AuthUser() owner: User,
+    @Args('data') createDishInput: CreateDishInput,
+  ): Promise<CreateDishOutput> {
+    return this.restaurantService.createDishByRestaurantId(
+      owner,
+      createDishInput,
+    );
   }
 }

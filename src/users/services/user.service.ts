@@ -58,16 +58,13 @@ export class UserService {
           error: 'User already exists',
         };
       }
-      const _user: User = await this.users.create({ email, password, role });
+      const _user: User = this.users.create({ email, password, role });
       // Save user
       const user: User = await this.users.save(_user);
       // Email verification
-      const _verification = await this.verification.create({ user });
+      const _verification = this.verification.create({ user });
       const verification = await this.verification.save(_verification);
-      await this.mailService.sendVerificationEmail(
-        user.email,
-        verification.code,
-      );
+      this.mailService.sendVerificationEmail(user.email, verification.code);
       return {
         ok: true,
         user,
@@ -94,12 +91,9 @@ export class UserService {
         // unverified
         _user.verified = false;
         // create verification code
-        const _verification = await this.verification.create({ user: _user });
+        const _verification = this.verification.create({ user: _user });
         const verification = await this.verification.save(_verification);
-        await this.mailService.sendVerificationEmail(
-          _user.email,
-          verification.code,
-        );
+        this.mailService.sendVerificationEmail(_user.email, verification.code);
       }
       if (password) {
         _user.password = password;
