@@ -9,10 +9,12 @@ import {
   CreateRestaurantInput,
   CreateRestaurantOutput,
 } from '../dto/createRestaurant.dto';
+import { DeleteDishInput } from '../dto/deleteDish.dto';
 import {
   DeleteRestaurantInput,
   DeleteRestaurantOutput,
 } from '../dto/deleteRestaurant.dto';
+import { EditDishInput, EditDishOutput } from '../dto/editDish.dto';
 import { RestaurantInput, RestaurantOutput } from '../dto/restaurant.dto';
 import { RestaurantsInput, RestaurantsOutput } from '../dto/restaurants.dto';
 import {
@@ -314,6 +316,66 @@ export class RestaurantsService {
         ok: true,
         error: null,
         dish,
+      };
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async editDishById(
+    owner: User,
+    editDishInput: EditDishInput,
+  ): Promise<EditDishOutput> {
+    const { dishId } = editDishInput;
+    try {
+      const dish = await this.dishes.findOne(
+        { id: dishId },
+        { relations: ['restaurant'] },
+      );
+      if (!dish) {
+        return {
+          ok: false,
+          error: 'Can not find the dish with provided id',
+        };
+      }
+      if (owner.id !== dish.restaurant.userId) {
+        return {
+          ok: false,
+          error: 'Only owner can delete this dish',
+        };
+      }
+      await this.dishes.save({
+        id: dishId,
+        ...editDishInput,
+      });
+      return {
+        ok: true,
+        error: null,
+      };
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async deleteDishById(owner: User, { id }: DeleteDishInput) {
+    try {
+      const dish = await this.dishes.findOne({ id });
+      if (!dish) {
+        return {
+          ok: false,
+          error: 'Can not find the dish with provided id',
+        };
+      }
+      if (owner.id !== dish.restaurant.userId) {
+        return {
+          ok: false,
+          error: 'Only owner can delete this dish',
+        };
+      }
+      await this.dishes.delete(id);
+      return {
+        ok: true,
+        error: null,
       };
     } catch (error) {
       console.error(error);
