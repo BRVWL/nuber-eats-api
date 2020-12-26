@@ -13,15 +13,28 @@ type Category {
   restaurantCount: Float!
 }
 
+type OrderItemOption {
+  name: String!
+  choice: String
+}
+
+type OrderItem {
+  id: Float!
+  createdAt: Float!
+  updatedAt: Float!
+  dish: Dish!
+  options: [OrderItemOption!]
+}
+
 type Order {
   id: Float!
   createdAt: Float!
   updatedAt: Float!
   customer: User
   deliver: User
-  restaurant: Restaurant!
-  dishes: [Dish!]!
-  totalPrice: Float!
+  restaurant: Restaurant
+  dishes: [OrderItem!]!
+  totalPrice: Float
   status: OrderStatus!
 }
 
@@ -182,6 +195,11 @@ type VerifyEmailOutput {
   ok: Boolean!
 }
 
+type CreateOrderOutput {
+  error: String
+  ok: Boolean!
+}
+
 type Query {
   getRestaurant(data: RestaurantInput!): RestaurantOutput!
   restaurants(data: RestaurantsInput!): RestaurantsOutput!
@@ -222,6 +240,7 @@ type Mutation {
   verifyEmail(data: VerifyEmailInput!): VerifyEmailOutput!
   login(data: LoginInput!): LoginOutput!
   updateUser(id: Float!, data: UpdateUserInputType!): UpdateUserOutput!
+  createOrder(data: CreateOrderInput!): CreateOrderOutput!
 }
 
 input CreateRestaurantInput {
@@ -253,11 +272,11 @@ input CreateDishInput {
 
 input DishOptionInputType {
   name: String!
-  choices: [DishChoiseInputType!]
+  choices: [DishChoiceInputType!]
   extraPrice: Float
 }
 
-input DishChoiseInputType {
+input DishChoiceInputType {
   name: String!
   extraPrice: Float
 }
@@ -294,4 +313,19 @@ input UpdateUserInputType {
   email: String
   password: String
   role: UserRole
+}
+
+input CreateOrderInput {
+  restaurantId: Float!
+  dishes: [CreateOrderItemInput!]!
+}
+
+input CreateOrderItemInput {
+  dishId: Float!
+  options: [OrderItemOptionInputType!]
+}
+
+input OrderItemOptionInputType {
+  name: String!
+  choice: String
 }

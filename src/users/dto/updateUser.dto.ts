@@ -4,6 +4,7 @@ import {
   InputType,
   ObjectType,
   PartialType,
+  PickType,
 } from '@nestjs/graphql';
 import { MutationOutput } from 'src/common/dto/output.dto';
 import { User } from '../entities/user.entity';

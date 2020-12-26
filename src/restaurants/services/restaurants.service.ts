@@ -93,8 +93,8 @@ export class RestaurantsService {
     try {
       const [restaurants, totalItems] = await this.restaurants.findAndCount({
         where: {
-          // name: ILike(`%${query}%`),
-          name: Raw((name) => `${name} ILIKE '%${query}%'`),
+          name: ILike(`%${query}%`),
+          // name: Raw((name) => `${name} ILIKE '%${query}%'`),
         },
         take: 25,
         skip: (page - 1) * 25,
