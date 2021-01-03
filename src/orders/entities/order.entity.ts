@@ -9,12 +9,20 @@ import { CoreEntity } from 'src/common/entities/core.entity';
 import { Dish } from 'src/restaurants/entities/dish.entity';
 import { Restaurant } from 'src/restaurants/entities/restaurant.entity';
 import { User } from 'src/users/entities/user.entity';
-import { Column, Entity, JoinTable, ManyToMany, ManyToOne } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  ManyToOne,
+  RelationId,
+} from 'typeorm';
 import { OrderItem } from './orderItem.entity';
 
 export enum OrderStatus {
   Pending = 'Pending',
   Cooking = 'Cooking',
+  Cooked = 'Cooked',
   PickedUp = 'PickedUp',
   Delivered = 'Delivered',
 }
@@ -31,6 +39,8 @@ export class Order extends CoreEntity {
     onDelete: 'SET NULL',
   })
   customer?: User;
+  @RelationId((order: Order) => order.customer)
+  customerId: number;
 
   @Field((_is) => User, { nullable: true })
   @ManyToOne((type) => User, (user) => user.rides, {
@@ -38,6 +48,8 @@ export class Order extends CoreEntity {
     onDelete: 'SET NULL',
   })
   deliver?: User;
+  @RelationId((order: Order) => order.deliver)
+  deliverId: number;
 
   @Field((_is) => Restaurant, { nullable: true })
   @ManyToOne((type) => Restaurant, (restaurant) => restaurant.orders, {
