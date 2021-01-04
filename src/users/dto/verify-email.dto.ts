@@ -1,4 +1,4 @@
-import { ArgsType, InputType, ObjectType, PickType } from '@nestjs/graphql';
+import { InputType, ObjectType, PickType } from '@nestjs/graphql';
 import { MutationOutput } from 'src/common/dto/output.dto';
 import { Verification } from '../entities/verification.entity';
 

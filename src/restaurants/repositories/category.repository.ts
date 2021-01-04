@@ -8,7 +8,7 @@ export class CategoryRepository extends Repository<Category> {
     const categorySlug = categoryName.replace(/ /g, '-');
     let category = await this.findOne({ slug: categorySlug });
     if (!category) {
-      const newCategory = await this.create({
+      const newCategory = this.create({
         name: categoryName,
         slug: categorySlug,
       });

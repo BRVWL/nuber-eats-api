@@ -1,7 +1,5 @@
-import { Field, InputType, ObjectType, PickType } from '@nestjs/graphql';
+import { Field, InputType, ObjectType } from '@nestjs/graphql';
 import { MutationOutput } from 'src/common/dto/output.dto';
-import { DishOption } from 'src/restaurants/entities/dish.entity';
-import { Order } from '../entities/order.entity';
 import { OrderItemOption } from '../entities/orderItem.entity';
 
 @InputType()

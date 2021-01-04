@@ -7,7 +7,7 @@ export class JwtService {
   constructor(@Inject('options') private readonly options: JwtOptions) {}
 
   async sign(payload) {
-    return await jwt.sign(payload, this.options.privateKey);
+    return jwt.sign(payload, this.options.privateKey);
   }
 
   async verify(token) {
